@@ -49,6 +49,9 @@ void loop()
 {
   if (mpu.data_ready())
   {
+    // Get pitch
+    float pitch = mpu.get_pitch();
+
+    freq_println("Pitch: " + String(pitch), 10);
   }
-  //   float pitch = filter.getRollRadians();
 }
