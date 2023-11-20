@@ -1,0 +1,21 @@
+{
+    "name": "MPU6050-Driver",
+    "version": "0.0.1",
+    "description": "A driver for the MPU 6050 6-axis IMU including support for the digital motion processor.",
+    "keywords": "imu, orientation, sensor",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Every-Flavor-Robotics/mpu6050-driver"
+    },
+    "authors": [
+        {
+            "name": "Swapnil Pande",
+            "email": "swapnil.pande98@gmail.com",
+            "url": "https://www.swapnilpande.me"
+        }
+    ],
+    "license": "MIT",
+    "frameworks": "arduino",
+    "platforms": "platformio/espressif32",
+    "dependencies": []
+}
