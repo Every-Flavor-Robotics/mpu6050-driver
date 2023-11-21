@@ -36,11 +36,21 @@ bool SensorGoMPU6050::begin(uint8_t addr, TwoWire *wire)
   configure_default_settings();
 
   //   Next, configure DMP
-  bool dmp_success = mpu.dmpInitialize();
-
-  if (!dmp_success)
+  uint8_t dev_status = mpu.dmpInitialize();
+  if (dev_status == 0)
   {
-    Serial.println("Failed to initialize DMP");
+    Serial.println(F("DMP ready! Waiting for first interrupt..."));
+  }
+  else
+  {
+    // ERROR!
+    // 1 = initial memory load failed
+    // 2 = DMP configuration updates failed
+    // (if it's going to break, usually the code will be 1)
+    Serial.print(F("DMP Initialization failed (code "));
+    Serial.print(dev_status);
+    Serial.println(F(")"));
+
     return false;
   }
 
@@ -51,7 +61,7 @@ bool SensorGoMPU6050::calibrate()
 {
   mpu.CalibrateGyro(6);
   //   TODO re-enable accel calibration
-  //   mpu.CalibrateAccel(6);
+  // mpu.CalibrateAccel(6);
 
   Serial.println("Calibration parameters: ");
   mpu.PrintActiveOffsets();
@@ -91,28 +101,33 @@ void SensorGoMPU6050::configure_default_settings()
 
 bool SensorGoMPU6050::data_ready()
 {
-  return imu_ready && mpu.dmpGetCurrentFIFOPacket(fifo_buffer);
+  bool ready = imu_ready && mpu.dmpGetCurrentFIFOPacket(fifo_buffer);
+
+  if (ready)
+  {
+    // read the package
+    mpu.dmpGetQuaternion(&q, fifo_buffer);
+  }
+
+  return ready;
 }
 
 float SensorGoMPU6050::get_pitch()
 {
-  // static variable used for debouncing
-  static float pitch;
-  Quaternion q;  // [w, x, y, z]         quaternion container
+  float sinp = 2 * (q.w * q.y - q.z * q.x);
+  return asin(sinp);
+}
 
-  // read the package
-  mpu.dmpGetQuaternion(&q, fifo_buffer);
+float SensorGoMPU6050::get_roll()
+{
+  float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+  float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+  return atan2(sinr_cosp, cosr_cosp);
+}
 
-  // calculate the angle of the robot
-  float pitch_new =
-      -_PI_2 + atan2(q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z,
-                     2 * (q.y * q.z + q.w * q.x));
-
-  // a bit of debouncing
-  if (abs(pitch_new - pitch) > 0.1)
-    pitch += sign(pitch_new - pitch) * 0.01;
-  else
-    pitch = pitch_new;
-
-  return pitch;
+float SensorGoMPU6050::get_yaw()
+{
+  float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+  float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+  return atan2(siny_cosp, cosy_cosp);
 }

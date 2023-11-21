@@ -20,6 +20,8 @@ class SensorGoMPU6050
   bool data_ready();
 
   float get_pitch();
+  float get_roll();
+  float get_yaw();
 
   //   void set_accelerometer_range(mpu6050_accel_range accel_range);
   //   void set_gyro_range(mpu6050_gyro_range gyro_range);
@@ -33,12 +35,6 @@ class SensorGoMPU6050
   //   void get_orientation(sensors_vec_t *orientation, sensors_event_t *accel,
   //                        sensors_event_t *mag);
   //   void get_sensor(sensor_t *accel, sensor_t *gyro, sensor_t *temp);
-
-  //   void write8(uint8_t reg, uint8_t value);
-  //   uint8_t read8(uint8_t reg);
-  //   uint16_t read16(uint8_t reg);
-
-  //   void read(void);
 
   //   void set_sleep_enabled(bool enabled);
   //   bool get_sleep_enabled(void);
@@ -67,6 +63,7 @@ class SensorGoMPU6050
   bool imu_ready;
   uint8_t interrupt_pin;  // expected DMP packet size (default is 42 bytes)
   uint16_t packet_size;
+  Quaternion q;  // [w, x, y, z]         quaternion container
 
   void configure_default_settings();
 
