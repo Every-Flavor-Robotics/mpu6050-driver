@@ -7,19 +7,21 @@ SensorGoMPU6050::SensorGoMPU6050() {}
 
 bool SensorGoMPU6050::begin(TwoWire *wire)
 {
-  return begin(MPU6050_DEFAULT_ADDRESS, _wire);
+  return begin(MPU6050_DEFAULT_ADDRESS, wire);
 }
 
 bool SensorGoMPU6050::begin(uint8_t addr, TwoWire *wire)
 {
-  pinMode(interrupt_pin, INPUT_PULLUP);
-
+  //   Wire1.begin(38, 47);
+  //   Wire1.setClock(400000);
   _wire = wire;
   dev_addr = addr;
   //   Begin I2C
   _wire->begin();
-  //   Set I2C clock to 400kHz
+  // Set I2C clock to 400kHz
   _wire->setClock(400000);
+
+  mpu = MPU6050(dev_addr, _wire);
 
   //  Check if device is connected
   _wire->beginTransmission(dev_addr);
