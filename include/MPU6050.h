@@ -39,7 +39,9 @@ THE SOFTWARE.
 #ifndef _MPU6050_H_
 #define _MPU6050_H_
 
-// #include "I2Cdev.h"
+#include <Arduino.h>
+
+#include "I2Cdev.h"
 #include "helper_3dmath.h"
 
 // supporting link:
