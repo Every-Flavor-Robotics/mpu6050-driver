@@ -17,5 +17,7 @@
     "license": "MIT",
     "frameworks": "arduino",
     "platforms": "platformio/espressif32",
-    "dependencies": []
+    "dependencies": {
+        "jrowberg/I2Cdevlib-Core": "*"
+    }
 }
